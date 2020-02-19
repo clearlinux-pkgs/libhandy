@@ -1,3 +1,513 @@
+libhandy (0.0.13) amber-phone; urgency=medium
+
+  [ Alexander Mikhaylenko ]
+  * paginator-box: Stop using gtk_widget_set_child_visible()
+    This function is meant for widgets that don't need to be mapped along with
+    parent widget, not for scrolled out widgets. Additionally, using it causes
+    strange side effects with GtkOverlay window z-ordering. Stop using it and
+    instead track visiblity manually. Also, clarify the code a bit.
+  * leaflet: Correctly handle 0 duration for swipe snap-back
+  * swipe-tracker: Don't animate when the distance is 0.
+    Usually it makes sense to restrict the minimum animation duration. However,
+    if the progress already matches the end progress, it just causes a delay,
+    so skip it completely.
+
+  [ Julian Sparber ]
+  * Keypad: Do not show allow typing + when only_digits is true.
+    The keypad shouldn't allow typing or show + when only_digits
+    is set to true. Therefore this adds the correct behavior.
+
+  [ Guido Günther ]
+  * Release libhandy 0.0.13
+
+ -- Guido Günther <agx@sigxcpu.org>  Fri, 27 Dec 2019 12:22:18 +0100
+
+libhandy (0.0.12) experimental; urgency=medium
+
+  [ Zander Brown ]
+  * build: Don't install glade catalogue when used as submodule
+
+  [ Alexander Mikhaylenko ]
+  * swipe-tracker: Grab widget during the gesture
+  * swipe-tracker: Animate when canceled.
+    There are some cases where not animating the canceled gesture looks
+    awkward. For example, when tapping a paginator while it animates.
+  * swipe-tracker: Don't add GDK_ALL_EVENTS_MASK.
+    That was a debugging leftover.
+  * header-group: Fix a leftover GtkSizeGroup mention
+  * paginator: Delegate hdy_paginator_scroll_to() to scroll_to_full()
+    This will help to avoid duplicating code in later commits.
+  * paginator-box: Add hdy_paginator_box_get_nth_child()
+  * doc: Add 0.0.12 index
+  * Add HdySwipeable.
+    A common interface that swipeable widgets should implement and that
+    HdySwipeGroup and HdySwipeTracker will use.
+  * paginator: Implement HdySwipeable
+  * swipe-tracker: Port to HdySwipeable.
+    Use a HdySwipeable instead of GtkWidget. Remove 'begin', 'update' and 'end'
+    signals and instead call HdySwipeable methods.
+  * Add HdySwipeGroup.
+    An object that allows to synchronize swipe animations of multiple widgets.
+    This can be used to sync widgets between headerbar and window content area.
+  * tests: Add HdySwipeGroup test
+  * glade: Support HdySwipeGroup.
+    Do the same thing as for HdyHeaderGroup.
+  * leaflet: Fix the folding sliding children padding.
+    Sets the children padding of the folding sliding animation depending on
+    the surface they'll be drawn on.
+    This doesn't change a thing for the sliding animation, but this will
+    avoid the children to be moved when snapshotting them, which is needed
+    for the over and under animations — which will be added in the next
+    commit — to work correctly.
+  * leaflet: Only clip visible area during transitions.
+    Adjust width and height of the clip rectangle to avoid drawing areas
+    outside of the widget.
+  * Introduce HdyShadowHelper.
+    This will be used in the following commits to add shadows to HeyLeaflet
+    transitions.
+  * leaflet: Dim bottom children during transitions.
+    Draw a dimming layer and a drop shadow over bottom child during 'over' and
+    'under' mode and child transitions.
+    The dimming, shadow and border styles are defined in CSS. The current style
+    is based on the similar animation in WebKit.
+  * swipe-tracker: Reduce base distance for vertical swipes.
+    Use 300px instead of 400px, otherwise it can be hard to use on small
+    touchpads.
+  * paginator-box: Adjust index when removing pages.
+    Prevent jumping when removing pages to the left of the current one.
+  * paginator: Support discrete scrolling.
+    Support scrolling on devices like mice. Switch a page when a scroll event
+    arrives and add a delay to prevent too fast scrolling.
+    Use animation duration as a delay, but don't let it go below 250ms, mainly
+    to ensure it still works with animations disabled.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/155
+  * swipe-tracker: Stop handling trackpoint.
+    Handle it like discrete scrolling instead.
+  * leaflet: Mention replacements in deprecations.
+    Have more useful warnings.
+  * leaflet: Mark child-transition and mode-transition as deprecated.
+    Properties are deprecated too, not just accessors.
+  * leaflet: Ignore deprecations for transition type acccessor declarations.
+    Since enums are deprecated now, these declarations trigger warnings in
+    modules that use libhandy. Since these functions are already deprecated
+    anyway, silence these warnings.
+  * deprecation-macros: Stop referencing nonexistent macros.
+    G_DEPRECATED_* and G_DEPRECATED_*_FOR aren't a thing.
+  * swipe-tracker: Make dragging touch-only.
+    Since HdyPaginator has mouse scrolling now, there's no need to have
+    dragging available on non-touch devices, so drop it.
+  * paginator-box: Wrap children into child info structs.
+    This will allow to carry additional data for them later.
+  * paginator-box: Put children into their own GdkWindows.
+    This allows to stop doing size allocation on each frame, and will allow
+    to implement drawing cache in the next commit.
+  * paginator-box: Implement drawing cache.
+    Keep a Cairo surface for each child. Paint children onto their surfaces,
+    then compose the final image. Instead of painting the whole children,
+    track invalidations and paint only changed parts. This means most paginator
+    redraws don't involve any child redraws. This should significantly speed
+    up scrolling when children are expensive to draw.
+  * paginator-box: Add animation-stopped signal.
+    This will be used in the next commit to add page-changed signal to
+    HdyPaginator.
+  * paginator: Add page-changed signal.
+    Allows to know when the current page has changed, this can be used to
+    implement "infinite scrolling" by connecting to this signal and amending
+    the pages.
+  * leaflet: Allocate last visible child during child transitions.
+    Fixes one cause of https://source.puri.sm/Librem5/libhandy/issues/85
+  * keypad: Immediately assign g_autoptrs to NULL.
+    Avoid compile-time warnings.
+  * paginator-box: Create window with correct dimensions.
+    It doesn't matter because it gets overridden later, but still fix it.
+  * example: Remove leftover adjustments.
+    See aa7a4eca68d8c75ff6347202c90515c5aea30c64
+  * paginator-box: Fix hdy_paginator_box_get_nth_child()
+    Return the actual widget, not child info struct.
+    A leftover from 710bcaacb97bdfac6061726a77665235279d4fe6
+  * leaflet: Use provided duration for child transitions.
+    Actually use the value from the function argument.
+  * swipeable: Provide swipe direction when preparing.
+    This will allow to restrict the swipe to only one direction for leaflet.
+  * swipeable: Distinguish direct and indirect swipes.
+    Add "direct" parameter to hdy_paginator_begin_swipe() and the corresponding
+    vfunc, providing a way to tell apart swipes started via HdySwipeGroup sync.
+    This will be used to have leaflet in headerbar that's not swipeable, but
+    can still animate along with leaflet in content area.
+  * swipe-tracker: Skip swipes in wrong direction.
+    Prevent swiping if the direction doesn't match tracker orientation. This
+    allows to have GtkScrolledArea inside or around swipeable widgets without
+    swipes taking over scrolling.
+  * leaflet: Add allow-visible child property.
+    This will be used to prevent swiping to widgets such as separators.
+  * leaflet: Add properties for controlling swipes.
+    This will allow to selectively enable back and/or forward swipes for
+    HdyLeaflet. By default swipes are disabled.
+  * leaflet: Implement back/forward swipe gesture.
+    Implement HdySwipeable and use HdySwipeTracker to detect back/forward
+    swipes.
+    Use can-swipe-back and can-swipe-forward properties for controlling swipes,
+    and use allow-visible child property to exclude certain widgets, such as
+    separators, from the gesture.
+    Multiple leaflets can be synced via HdySwipeGroup.
+  * example: Enable back swipe in the leaflet.
+    Set can-swipe-back=true on the content leaflet, allow-visible=false for
+    separators and use HdySwipeGroup for syncing leaflets rather than binding
+    visible child name.
+  * leaflet: Queue relayout after child transition ends.
+    Prevents close button from occasionally disappearing after swipes.
+  * swipe-tracker: Add 'allow-mouse-drag' property
+  * paginator: Add 'allow-mouse-drag' property.
+    Usually we don't want this, because there's scrolling. However, phosh
+    still needs this for lockscreen, hence optionally allow it.
+  * paginator-box: Register window before setting parent.
+    Prevents newly created widgets from reusing parent's window.
+    Fixes a regression from e6a477492de6cc4d5107147b9724980ffd7343ea
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/165
+  * swipeable: Fix signal names for docs
+  * swipe-group: Don't escape tag names for docs
+  * leaflet: Deprecate old transition type properties.
+    They did already have the deprecated flag, but weren't shown as deprecated
+    in docs.
+  * Update @See_also for swipeable widgets.
+    Mention HdyLeaflet in HdySwipeable, HdySwipeGroup and HdySwipeTracker.
+
+  [ louib ]
+  * Fix typo in README.
+  * Remove casts requiring increased alignment.
+    Some casts were increasing the required alignment in
+    callbacks, raising warnings when compiled on arm with gcc.
+
+  [ Guido Günther ]
+  * Add deprecation macros.
+    The macros are libhandy internal (should not be used in application
+    code) and are as such marked with a '_'. This also makes gtk-doc
+    happy since it treats it as a public symbol otherwise.
+  * Deprecate all hdy-dialer{-cycle}-button api.
+    It's considered HdyDialer internal API
+  * HdyDialer: Remove excessive '*'
+  * build: Install new header file.
+    Fixes: ac94e649aac540c1ecaa9df98364049e182605cc
+  * Release libhandy 0.0.12
+
+  [ Adrien Plazas ]
+  * leaflet: Clip children when drawing unfolded.
+    This will clip children to ensure they don't get drawn on or under the
+    visible child, which will allow to create mode transition animations
+    where other children appear to be drawn under the visible child.
+  * leaflet: Clip the end surface when drawing folded.
+    This will clip the end surface to ensure it doesn't get drawn on or
+    under the visible child, which will allow to create mode transition
+    animations where other children appear to be drawn under the visible
+    child.
+  * leaflet: Add the over and under mode transition animations.
+    This allows the mode transition animation to match the semantic of the
+    over and under child transitions.
+  * leaflet: Unify the transition types.
+    Add the HdyLeafletTransitionType enumeration and the transition-type
+    property to define both the mode and child transitions, as having them
+    different makes no sense and could lead to spatialization issues.
+    This new type doesn't offer a crossfade transition on purpose as it was
+    deemed inappropriate for the leaflet, for which the position of the
+    children is inherently important.
+    This also deprecates the two previous properties and their respective
+    types.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/92.
+  * leaflet: Remove the over and under mode transitions.
+    There is no point in adding enum values and deprecating them in the same
+    version, so let's just remove them. The animations are still available
+    via the newly added HdyLeafletTransitionType type and the
+    transition-type property, so this also encourages migrating to the new
+    API.
+  * examples: Add a Leaflet page.
+    This adds a page to demo the leaflet transitions, drops usage of the
+    deprecated leaflet transition types and properties, and defaults to the
+    'over' transition to demo it and its shadow effect.
+  * Deprecate HdyArrows.
+    As far as we know, nothing uses it anymore and it's not part of our
+    latest designs.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/126.
+  * examples: Drop the Arrows page.
+    HdyArrows is now deprecated, so we don't want to promote it.
+  * leaflet: Drop some old TODOs.
+    We just don't need them anymore.
+  * leaflet: Add Alexander Mikhaylenko's copyright.
+    His work on this class is far from negligeable, let's reflect that in
+    the copyright.
+  * view-switcher-button: Fix the action bar hover style.
+    This makes the buttons out of a header bar slightly lighter when hovered
+    and the window is focused. Previously they were the same color as the
+    unfocused buttons and the action bar, making them look less good and
+    harder to use.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/147.
+
+  [ Julian Sparber ]
+  * Keypad: Add a general keypad.
+    This is based on HdyDialer, but with more flexible API.
+    The new Keypad allows to set a custom Widget to the left/right
+    lower corner, replacing the original widget.
+    The Keypad extents directly GtkGrid which exposes all grid properties.
+    It also allows to replace/change every button in the Keypad, just like
+    in GtkGrid.
+    It also adds a GtkEntry which can be used as the focus widget,
+    it has the key-press-event already connected and it grabs focus once
+    it's mapped. The Entry isn't part of the keypad, it's just a
+    convenienced way to create a Entry, you would expect to use with a
+    keypad.
+  * Tests: add keypad tests
+  * Docs: add docs and demo for keypad
+  * Dialer: deprecate hdydialer
+  * HdyDialer: Remove it from the demo.
+    Remove the dialer from the demo since it's deprecated.
+  * HdyDialer: Deprecate objects related to dialer.
+    HdyDialerButton, HdyDialerCycleButton and HdyDialer objects where not
+    deprecated, only there methods were.
+
+  [ Oliver Galvin ]
+  * README: minor punctuation fixes, and update Fractal URL to GNOME namespace
+  * docs: Consistently use full sentences in short descriptions.
+  * docs: Add sections about building and bundling to the 'Compiling with
+    libhandy' page, and generally tidy the page.   * docs: Update copyright
+    year range.
+  * meson: fix configure-time warning - Use the 'pie' kwarg instead of passing
+    '-fpie' manually. Also bump Meson to 0.49.0, when the pie kwarg was added.
+  * meson: Tidy build files. Use / operator (added in Meson 0.49.0) instead of
+    join_paths. Use package_api_name variable to avoid repetition.
+  * style: Remove odd tabs as per 'Coding Style' in HACKING.md, and fix typo.
+
+  [ Ting-Wei Lan ]
+  * keypad: Fix compilation error for clang.
+    Function hdy_keypad_button_get_digit is declared to return 'char' in
+    src/hdy-keypad-button-private.h but defined to return 'const char' in
+    src/hdy-keypad-button.c. This is not allowed by clang. Since it is
+    unusual to mark a return value itself as const, just drop const here.
+
+ -- Guido Günther <agx@sigxcpu.org>  Thu, 12 Dec 2019 09:49:04 +0100
+
+libhandy (0.0.11) experimental; urgency=medium
+
+  [ Adrien Plazas ]
+  * dialer: Work around GtkGrid row homogeneity.
+    Puts the buttons into a vertical size group rather than making the rows
+    homogeneous. This prevents a bug from GtkGrid to make the buttons too
+    tall when the action buttons are hidden.
+  * dialog: Don't warn if the titlebar isn't a GtkHeaderBar.
+    Using another widget is perfectly valid, so we should just return
+    instead.
+  * dialog: Refactor the transient-for workaround.
+    This will make introducing new properties simpler.
+  * dialog: Add the narrow property.
+  * header-bar: Show a back button in a narrow HdyDialog.
+    If a header bar is in a narrow HdyDialog, it will display a back button
+    at its start in place of its usual window decorations.
+  * examples: Add a complex HdyDialog example.
+    This shows how to use HdyHeaderBar and HdyDialog to create a more
+    complex adaptive dialog.
+  * header-bar: Show a back button on small non-sovereign windows.
+    This will show the back button not only in small HdyDialog but in all
+    small windows that are not sovereign.
+  * meson: Set the log domain.
+    This makes the log messages from libhandy look like `Handy-Debug: …`
+    rather than `** Debug: …`, making them easier to distinguish.
+  * README.md: Update the documentation URL.
+    It's on the developer.puri.sm now.
+  * Add animation helpers.
+    Add various animation helpers to avoid coyping them around.
+  * squeezer: Support animation disablement.
+    This will animate the child transitions only if animations are enabled.
+  * preferences-group: Use the h4 style class.
+    Use the h4 style class instead of hardcoding the bold style for the
+    preferences group title, and implement a fallback making the font bold.
+    This is needed by elementary to use their own style.
+  * animation: Make some functions public.
+    This makes hdy_get_enable_animations() and hdy_ease_out_cubic() public.
+  * view-switcher-button: Don't make transparent on hover.
+    This doesn't make the background transparent when hovering and apply the
+    same style as non-hovered buttons on hovered buttons in a headerbar.
+
+  [ Gabriele Musco ]
+  * Added Unifydmin to Python 3 examples
+  * Add HydraPaper to Python 3 examples
+
+  [ Ting-Wei Lan ]
+  * Don't require GNU sed
+
+  [ Jeremy Bicha ]
+  * Debian packaging improvements
+
+  [ Guido Günther ]
+  * debian: Ship example program and files
+  * Release libhandy 0.0.11
+
+  [ Alexander Mikhaylenko ]
+  * search-bar: Hide start and end boxes instead of close button.
+  * glade: Update catalog dtd.
+  * Add new HdySwipeTracker widget.
+    This will be used to implement swipes in new widgets.
+  * Add new HdyPaginator widget.
+    Display set of pages with swipe based navigation.
+
+  [ David Boddie ]
+  * Deploy documentation for the master branch
+
+  [ Michael Catanzaro ]
+  * glade: Don't install glade files outside build prefix.
+
+ -- Guido Günther <agx@sigxcpu.org>  Tue, 27 Aug 2019 12:50:01 +0200
+
+libhandy (0.0.10) experimental; urgency=medium
+
+  [ Adrien Plazas ]
+  * .editorconfig: Add CSS
+  * arrows: Refresh HdyArrowsDirection docs.
+    This moves the HdyArrowsDirection documentation to the C file and
+    removes the final period from the values definitions, like for all other
+    enums documentations.
+  * docs: Add section for new symbols in 0.0.10
+  * view-switcher: Fix stack children callbacks.
+    This fixes the callbacks when a child is added or removed from the view
+    switcher's stack.
+  * view-switcher-button: Make an active button's label bold.
+    This makes the view switcher easier to read.
+    It uses multiple labels with or without the specific style rather than a
+    single label with the style toggled on and off to ensure the size
+    requests don't change depending on whether the button is active or not.
+  * leaflet: Synchronize paired notifications.
+    This ensures users can't react to a visible child change notification or
+    a fold change notification before we finish emitting all related
+    notifications.
+  * Add HdySqueezer.
+    This can be used to automatically hide a widget like a HdyViewSwitcher
+    in a header bar when there is not enough space for it and show a title
+    label instead.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/100
+  * examples: Use a HdySqueezer.
+    Use a HdySqueezer in the view switcher window to show either the view
+    switcher in the header bar, or a window title and a view switcher bar
+    depending on the window's width.
+  * view-switcher-button: Allow to elipsize in narrow mode.
+    This will be used to let HdyViewSwitcherBar reach even narrower widths.
+  * view-switcher: Allow to elipsize in narrow mode.
+    This will be used to let HdyViewSwitcherBar reach even narrower widths.
+  * view-switcher-bar: Ellipsize in narrow mode.
+    This lets HdyViewSwitcherBar reach even narrower widths.
+  * view-switcher-button: Use buttons borders in size.
+    When computing the size of the button, take the button's border into
+    account.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/108
+  * view-switcher-bar: Sort properties by alphabetical order.
+    This fixes a code style error and will avoid to propagate it as the file
+    gets edited.
+  * view-switcher-bar: Add margins.
+    Add margings around the view switcher to better match the mockups.
+  * view-switcher: Define a minimum natural width.
+    This prevents the buttons from looking terribly narrow in a wide bar by
+    making them request a minimum good looking natural size.
+  * Add HdyPreferencesRow.
+    This will be used as the base row for the preferences window, offering
+    data needed to search a preference entry.
+  * action-row: Extend HdyPreferencesRow.
+    This allows to use HdyActionRow and its derivatives as preferences rows.
+  * Add HdyPreferencesGroup.
+    This will be used to group preferences rows as a coherent group in a
+    preferences page.
+  * Add HdyPreferencesPage.
+    This will be used to group preferences as pages in a preferences window.
+  * Add HdyPreferencesWindow.
+    This allows to easily create searchable preferences windows.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/101
+  * examples: Add a HdyPreferencesWindow example
+  * Add private GtkWindow functions.
+    Add the private GtkWindow functions _gtk_window_toggle_maximized()
+    and gtk_window_get_icon_for_size() which will be used in the next commit
+    by HdyHeaderBar.
+  * Add HdyHeaderBar.
+    Fork GtkHeaderBar to help fixing shortcomings caused by adaptive designs
+    or coming from GtkHeaderBar itself as features are not accepted into GTK
+    3 anymore.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/102
+  * examples: Use HdyHeaderBar in the View Switcher page.
+    This correctly centers the view switcher and demoes HdyHeaderBar.
+  * view-switcher: Recommend to use a HdyHeaderBar.
+    This will help users of HdyViewSwitcher to know how to make it look
+    good in a header bar.
+  * examples: Drop un unused signal connection.
+    This avoids a run time warning.
+  * docs: Add images for HdyViewSwitcher and HdyViewSwitcherBar
+  * preferences-window: Strictly center the header bar.
+    This makes the header bar's widgets look better by ensuring they are
+    always centered, even if it means they will be narrower.
+  * conbo-row: Make the popover relative to the arrow.
+    Consistently point to the arrow rather than sometimes to the arrow and
+    sometimes to the invisible box containing the current value.
+  * combo-row: Add HdyComboRowGetName.
+    Replace HdyComboRowCreateLabelData by HdyComboRowGetName and keep a
+    reference to in the combo row to allow accessing it externally. It will
+    be needed to automatically handle converting the value into a name to
+    display as the subtitle of the row.
+  * combo-row: Add the use-subtitle property.
+    Allow to display the current value as the subtitle rather than at the
+    end of the row.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/95
+  * header-bar: Render margins and borders.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/121
+
+  [ Zander Brown ]
+  * Add HdyViewSwitcherButton.
+    This will be used in the next commit by HdyViewSwitcher.
+  * Add HdyViewSwitcher.
+    This more modern and adaptive take on GtkStackSwitcher helps building
+    adaptive UIs for phones.
+    Fixes https://source.puri.sm/Librem5/libhandy/issues/64
+  * Add HdyViewSwitcherBar.
+    This action bar offers a HdyViewSwitcher and is designed to be put at
+    the bottom of windows. It is designed to be revealed when the header bar
+    doesn't have enough room to fit a HdyViewSwitcher, helping the windows
+    to reach narrower widths.
+  * examples: Add the View Switcher page.
+    This example presents a HdyViewSwitcher and a HdyViewSwitcherBar in
+    their own window. Currently both are visible at the same time, a later
+    commit should make only one visible at a time, depending on the
+    available width.
+
+  [ Aearil ]
+  * Update components list for the external projects in the README
+
+  [ Mohammed Sadiq ]
+  * dialog: Fix typos in documentation
+  * demo-window: Fix typo in property name
+
+  [ Oliver Galvin ]
+  * Change GTK+ to GTK
+  * Fix a few typos and grammatical mistakes
+  * Expand the visual overview.
+    Add more widgets and a comparison of HdyDialog
+
+  [ Guido Günther ]
+  * Release libhandy 0.0.10
+  * HACKING:
+    - Properly end emphasis
+    - Document extra space after function calls
+  * ci improvements
+    - Split doc build to different stage
+    - Split out unit tests to different stage
+    - Drop coverage on Fedora. It's not evaulated anyway
+    - Split out build commands
+    - Drop tests from static build
+    - Move Debian package to packaging stage
+  * gitlab-ci: Archive the build debs
+  * HdyArrows: 
+    - Fix obvious documentation errors
+    - Only redraw widget if visible
+    - Don't emit notify signals on unchanged properties
+    - Redraw arrows on property changes
+  * HdyDemoWindow: Don't schedule arrow redraws
+  * Add suppression for ASAN
+  * tests-dialer: cleanups
+  * HdyDialer: Make show_action_buttons match the initial property default
+
+ -- Guido Günther <agx@sigxcpu.org>  Wed, 12 Jun 2019 17:23:21 +0200
+
 libhandy (0.0.9) experimental; urgency=medium
 
   [ Benjamin Berg ]
