@@ -1,0 +1,33 @@
+From 2561f5a2dd1310accfb8b9fbc2b8588096be3559 Mon Sep 17 00:00:00 2001
+From: "Brett T. Warden" <brett.t.warden@intel.com>
+Date: Tue, 16 Jun 2020 10:33:01 -0700
+Subject: [PATCH] Add missing run.in
+
+Broken in 0.81.0 release; fix was merged in
+https://gitlab.gnome.org/GNOME/libhandy/-/merge_requests/494/diffs
+---
+ run.in | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100644 run.in
+
+diff --git a/run.in b/run.in
+new file mode 100644
+index 000000000000..629897b5d553
+--- /dev/null
++++ b/run.in
+@@ -0,0 +1,12 @@
++#!/bin/sh
++
++ABS_BUILDDIR='@ABS_BUILDDIR@'
++ABS_SRCDIR='@ABS_SRCDIR@'
++
++export GLADE_CATALOG_SEARCH_PATH="${ABS_SRCDIR}/glade/:${GLADE_CATALOG_SEARCH_PATH}"
++export GLADE_MODULE_SEARCH_PATH="${ABS_BUILDDIR}/glade:${GLADE_MODULE_SEARCH_PATH}"
++export GI_TYPELIB_PATH="${ABS_BUILDDIR}/src:$GI_TYPELIB_PATH"
++export LD_LIBRARY_PATH="${ABS_BUILDDIR}/src:${ABS_BUILDDIR}/glade:$LD_LIBRARY_PATH"
++export PKG_CONFIG_PATH="${ABS_BUILDDIR}/src:$PKG_CONFIG_PATH"
++
++exec "$@"
+-- 
+2.27.0
+
