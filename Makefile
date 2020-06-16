@@ -1,5 +1,5 @@
 PKG_NAME := libhandy
-URL = https://gitlab.gnome.org/GNOME/libhandy/-/archive/0.81.0/libhandy-0.81.0.tar.bz2
+URL = https://source.puri.sm/Librem5/libhandy/-/archive/v0.0.13/libhandy-v0.0.13.tar.gz
 ARCHIVES = 
 
 include ../common/Makefile.common
