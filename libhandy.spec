@@ -4,7 +4,7 @@
 #
 Name     : libhandy
 Version  : 1.0.0
-Release  : 6
+Release  : 7
 URL      : https://gitlab.gnome.org/GNOME/libhandy/-/archive/1.0.0/libhandy-1.0.0.tar.gz
 Source0  : https://gitlab.gnome.org/GNOME/libhandy/-/archive/1.0.0/libhandy-1.0.0.tar.gz
 Summary  : A library full of GTK widgets for mobile phones
