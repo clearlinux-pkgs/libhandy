@@ -35,6 +35,7 @@ libhandy-1.so.0:hdy_avatar_set_size
 libhandy-1.so.0:hdy_avatar_set_text
 libhandy-1.so.0:hdy_carousel_get_allow_long_swipes
 libhandy-1.so.0:hdy_carousel_get_allow_mouse_drag
+libhandy-1.so.0:hdy_carousel_get_allow_scroll_wheel
 libhandy-1.so.0:hdy_carousel_get_animation_duration
 libhandy-1.so.0:hdy_carousel_get_interactive
 libhandy-1.so.0:hdy_carousel_get_n_pages
@@ -58,6 +59,7 @@ libhandy-1.so.0:hdy_carousel_scroll_to
 libhandy-1.so.0:hdy_carousel_scroll_to_full
 libhandy-1.so.0:hdy_carousel_set_allow_long_swipes
 libhandy-1.so.0:hdy_carousel_set_allow_mouse_drag
+libhandy-1.so.0:hdy_carousel_set_allow_scroll_wheel
 libhandy-1.so.0:hdy_carousel_set_animation_duration
 libhandy-1.so.0:hdy_carousel_set_interactive
 libhandy-1.so.0:hdy_carousel_set_reveal_duration
@@ -253,9 +255,11 @@ libhandy-1.so.0:hdy_navigation_direction_get_type
 libhandy-1.so.0:hdy_preferences_group_get_description
 libhandy-1.so.0:hdy_preferences_group_get_title
 libhandy-1.so.0:hdy_preferences_group_get_type
+libhandy-1.so.0:hdy_preferences_group_get_use_markup
 libhandy-1.so.0:hdy_preferences_group_new
 libhandy-1.so.0:hdy_preferences_group_set_description
 libhandy-1.so.0:hdy_preferences_group_set_title
+libhandy-1.so.0:hdy_preferences_group_set_use_markup
 libhandy-1.so.0:hdy_preferences_page_get_icon_name
 libhandy-1.so.0:hdy_preferences_page_get_title
 libhandy-1.so.0:hdy_preferences_page_get_type
