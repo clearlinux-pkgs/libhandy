@@ -71,6 +71,7 @@ libhandy-1.so.0:hdy_clamp_get_type
 libhandy-1.so.0:hdy_clamp_new
 libhandy-1.so.0:hdy_clamp_set_maximum_size
 libhandy-1.so.0:hdy_clamp_set_tightening_threshold
+libhandy-1.so.0:hdy_color_scheme_get_type
 libhandy-1.so.0:hdy_combo_row_bind_model
 libhandy-1.so.0:hdy_combo_row_bind_name_model
 libhandy-1.so.0:hdy_combo_row_get_model
@@ -315,6 +316,15 @@ libhandy-1.so.0:hdy_status_page_new
 libhandy-1.so.0:hdy_status_page_set_description
 libhandy-1.so.0:hdy_status_page_set_icon_name
 libhandy-1.so.0:hdy_status_page_set_title
+libhandy-1.so.0:hdy_style_manager_get_color_scheme
+libhandy-1.so.0:hdy_style_manager_get_dark
+libhandy-1.so.0:hdy_style_manager_get_default
+libhandy-1.so.0:hdy_style_manager_get_display
+libhandy-1.so.0:hdy_style_manager_get_for_display
+libhandy-1.so.0:hdy_style_manager_get_high_contrast
+libhandy-1.so.0:hdy_style_manager_get_system_supports_color_schemes
+libhandy-1.so.0:hdy_style_manager_get_type
+libhandy-1.so.0:hdy_style_manager_set_color_scheme
 libhandy-1.so.0:hdy_swipe_group_add_swipeable
 libhandy-1.so.0:hdy_swipe_group_get_swipeables
 libhandy-1.so.0:hdy_swipe_group_get_type
