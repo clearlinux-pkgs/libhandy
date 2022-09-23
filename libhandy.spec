@@ -4,7 +4,7 @@
 #
 Name     : libhandy
 Version  : 1.8.0
-Release  : 25
+Release  : 26
 URL      : https://download.gnome.org/sources/libhandy/1.8/libhandy-1.8.0.tar.xz
 Source0  : https://download.gnome.org/sources/libhandy/1.8/libhandy-1.8.0.tar.xz
 Summary  : No detailed summary available
