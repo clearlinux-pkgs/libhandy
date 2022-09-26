@@ -4,7 +4,7 @@
 #
 Name     : libhandy
 Version  : 1.8.0
-Release  : 27
+Release  : 28
 URL      : https://download.gnome.org/sources/libhandy/1.8/libhandy-1.8.0.tar.xz
 Source0  : https://download.gnome.org/sources/libhandy/1.8/libhandy-1.8.0.tar.xz
 Summary  : No detailed summary available
@@ -92,7 +92,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1663251254
+export SOURCE_DATE_EPOCH=1664158018
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -fno-lto "
 export FCFLAGS="$FFLAGS -fno-lto "
